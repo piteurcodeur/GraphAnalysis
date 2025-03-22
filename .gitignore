@@ -1,0 +1,8 @@
+
+data/
+obj/
+bin/
+lib/
+.vscode/
+*lib/boost_1_87_0.zip
+*lib/boost_1_87_0
