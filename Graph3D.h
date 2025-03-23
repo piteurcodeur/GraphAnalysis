@@ -12,6 +12,9 @@
 #include <QLabel>
 #include <QVector3D>
 #include <QVector>
+#include <QPair>
+#include <QResizeEvent>
+#include <QShowEvent>
 
 class Graph3D : public QWidget
 {
@@ -21,8 +24,13 @@ public:
     Graph3D(QWidget *parent = nullptr);
     ~Graph3D();
 
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+    void showEvent(QShowEvent *event) override;
+
 private:
     void createGraph();
+    void createEdge(int fromNode, int toNode);
     void updateLabels();
 
     Qt3DExtras::Qt3DWindow *view;

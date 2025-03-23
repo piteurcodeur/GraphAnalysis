@@ -6,6 +6,7 @@
 #include <cmath>
 #include <limits>
 
+
 #ifdef _WIN32
     #include <windows.h>
     #undef max
@@ -22,6 +23,7 @@
 #include <QGraphicsLineItem>
 #include <QPen>
 #include <QBrush>
+#include <QHBoxLayout>
 
 
 using namespace std;
@@ -73,7 +75,7 @@ public:
             int r = 80 + ((z+1000)/2000)*(255-80); //variation de rouge en fonction de z
             //int r = 255 - ((z+1000)/2000)*(255-80); //variation de rouge en fonction de z
             QColor color(r, 0, 0); 
-            
+            //cout << z << "-> r="<<r << endl;
 
             QGraphicsEllipseItem *ellipse = scene->addEllipse(x-50, y-50 , 100, 100, QPen(Qt::black), QBrush(color));
             //ellipse->setToolTip(QString("Node %1").arg(i));
@@ -94,7 +96,8 @@ public:
             //ellipse->setFlag(QGraphicsItem::ItemIsSelectable);
 
         }
-
+        
+        
 
         // Ajuster la vue pour s'adapter à la scène
         fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
@@ -113,15 +116,47 @@ public:
 };
 
 
+
+class ColorLegend : public QWidget {
+    public:
+        ColorLegend(QWidget *parent = nullptr) : QWidget(parent) {
+            setMinimumSize(100, 300); // Taille minimale pour l'affichage
+        }
+    
+    protected:
+        void paintEvent(QPaintEvent *event) override {
+            QPainter painter(this);
+            
+            // Création du dégradé vertical
+            QLinearGradient gradient(20, 10, 20, height() - 10);
+            gradient.setColorAt(0, QColor(255, 0, 0)); // Rouge clair en haut
+            gradient.setColorAt(1, QColor(80, 0, 0));     // Rouge foncé en bas
+    
+            // Dessiner la barre avec le dégradé
+            QRectF rect(20, 10, 20, height() - 20);
+            painter.fillRect(rect, gradient);
+    
+            // Dessiner les valeurs sur le côté droit
+            painter.setPen(Qt::black);
+            int numLabels = 5;
+            for (int i = 0; i < numLabels; i++) {
+                int y = 10 + i * (height() - 20) / (numLabels - 1);
+                //100 - i * 25
+                //valeur de -1000 à 1000+
+                int valeur = -1000 + i * 2000 / (numLabels - 1);
+                QString value = QString::number(valeur);
+                //QString value = QString::number(1000 + ((i+4)/4) * 2000) + "%"; // Ex: 100%, 75%, 50%...
+                painter.drawText(50, y + 5, value);
+            }
+        }
+    };
+
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-
-    /*QWindow* window = new QWindow();
-    window->setTitle("miniProjetCpp");
-    window->resize(WIDTH, HEIGHT);
-    window->setSurfaceType(QSurface::OpenGLSurface);
-    window->setFormat(QSurfaceFormat::defaultFormat());*/
+    //app.setWindowIcon(QIcon("icons/app_icon.png"));
+   
     
 
     #ifdef _WIN32
@@ -203,16 +238,28 @@ int main(int argc, char *argv[])
     // Analyse du graphe
     compute_graph(g);
 
-    // Création de la fenêtre Qt pour afficher le graphe
-    GraphView *view = new GraphView();
-    view->setWindowTitle("Graph Visualization");
-    view->resize(WIDTH, HEIGHT);
-    view->drawGraph(g, coord_list);
-    view->show();
+    // 🌟 Création du widget principal qui contiendra le graphe et la légende 🌟
+    QWidget mainWidget;
+    mainWidget.setWindowTitle("Graph Visualization");
+    mainWidget.resize(WIDTH + 150, HEIGHT); // Augmenter la largeur pour la légende
 
+    // 📌 Layout principal en horizontal (gauche = graphe, droite = légende)
+    QHBoxLayout *layout = new QHBoxLayout(&mainWidget);
 
-    //Graph3D window;
-    //window.show();
+    // 📌 Widget du graphe
+    GraphView *graphView = new GraphView();
+    graphView->resize(WIDTH, HEIGHT);
+    graphView->drawGraph(g, coord_list);
+    layout->addWidget(graphView);
+
+    // 📌 Widget de la légende
+    ColorLegend *colorLegend = new ColorLegend();
+    layout->addWidget(colorLegend);
+    
+
+    // Affichage de la fenêtre principale
+    mainWidget.show();
+
 
     return app.exec();
 }

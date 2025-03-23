@@ -80,6 +80,32 @@ void find_shortest_path(Graph &g, Vertex start, Vertex goal) {
     cout << " Path Length: " << cpt << endl;
 }
 
+void CSVOuptutFunction(Graph &g, vector<std::pair<double, double>>, vector<std::tuple<double, double, double>> &coord_list, const string &filename) {
+    // Création d'un fichier CSV pour stocker les arêtes
+    ofstream file(filename);
+    if (!file.is_open())
+    {
+        cerr << "Impossible d'ouvrir le fichier de sortie" << endl;
+        return;
+    }
+    
+    // En-tête du fichier CSV
+    file << "ID1;ID2;Distance;Path" << endl;
+    
+    // Parcours des arêtes
+    graph_traits<Graph>::edge_iterator ei, ei_end;
+    for (tie(ei, ei_end) = edges(g); ei != ei_end; ++ei)
+    {
+        Edge e = *ei;
+        Vertex u = source(e, g);
+        Vertex v = target(e, g);
+        double distance = calcul_distance(u, v, coord_list);
+        file << u+1 << ";" << v+1 << ";" << distance << endl;  // +1 pour afficher l'ID à partir de 1
+    }
+    
+    file.close();
+}
+
 void compute_graph(Graph &g)
 {
     cout<< "\n1. Node degree calculation :" << endl;
