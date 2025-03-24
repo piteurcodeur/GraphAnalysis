@@ -13,7 +13,6 @@
 #endif
 
 #include "graph_analysis.h"
-//#include "Graph3D.h"
 #include <QApplication>
 #include <QWindow>
 #include <QSurfaceFormat>
@@ -52,7 +51,7 @@ public:
             Edge e = *ei;
             Vertex u = source(e, g);
             Vertex v = target(e, g);
-            float weight = get(boost::edge_weight, g, e);
+            //float weight = get(boost::edge_weight, g, e);
             double x1 = get<0>(coord_list[u]);
             double y1 = get<1>(coord_list[u]);
             double x2 = get<0>(coord_list[v]);
@@ -77,12 +76,13 @@ public:
             QColor color(r, 0, 0); 
             //cout << z << "-> r="<<r << endl;
 
-            QGraphicsEllipseItem *ellipse = scene->addEllipse(x-50, y-50 , 100, 100, QPen(Qt::black), QBrush(color));
+            //QGraphicsEllipseItem *ellipse = 
+            scene->addEllipse(x-50, y-50 , 100, 100, QPen(Qt::black), QBrush(color));
             //ellipse->setToolTip(QString("Node %1").arg(i));
 
 
             //écrire dans l'élipce le numéro du sommet
-            QGraphicsTextItem *text = scene->addText(QString::number(i));
+            QGraphicsTextItem *text = scene->addText(QString::number(i+1));
             if(i<10)
                 text->setPos(x-25, y-45);
             else{
@@ -96,9 +96,6 @@ public:
             //ellipse->setFlag(QGraphicsItem::ItemIsSelectable);
 
         }
-        
-        
-
         // Ajuster la vue pour s'adapter à la scène
         fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
     }   
@@ -133,21 +130,25 @@ class ColorLegend : public QWidget {
             gradient.setColorAt(1, QColor(80, 0, 0));     // Rouge foncé en bas
     
             // Dessiner la barre avec le dégradé
-            QRectF rect(20, 10, 20, height() - 20);
+            QRectF rect(20, 40, 20, height() - 60);
             painter.fillRect(rect, gradient);
     
             // Dessiner les valeurs sur le côté droit
             painter.setPen(Qt::black);
             int numLabels = 5;
             for (int i = 0; i < numLabels; i++) {
-                int y = 10 + i * (height() - 20) / (numLabels - 1);
+                int y = 40 + i * (height() - 70) / (numLabels - 1);
                 //100 - i * 25
                 //valeur de -1000 à 1000+
-                int valeur = -1000 + i * 2000 / (numLabels - 1);
+                int valeur = 1000 - i * 2000 / (numLabels - 1);
                 QString value = QString::number(valeur);
                 //QString value = QString::number(1000 + ((i+4)/4) * 2000) + "%"; // Ex: 100%, 75%, 50%...
-                painter.drawText(50, y + 5, value);
+                painter.drawText(50, y + 10, value);
             }
+            // Afficher le titre
+            //taille du texte = 20
+            painter.setFont(QFont("Arial", 10));
+            painter.drawText(10, 20, "Distance : ");
         }
     };
 
@@ -203,8 +204,10 @@ int main(int argc, char *argv[])
     readCSV(filename_edges, edges);
     readCSV(filename_nodes, nodes);
 
+    /*
     cout << "Nombre d'arêtes lues: " << edges.size() << endl;
     cout << "Nombre de noeuds lus: " << nodes.size() << endl;
+    */
 
     /* Création de la liste des arêtes */
     vector<pair<int, int>> edge_list;
@@ -232,16 +235,18 @@ int main(int argc, char *argv[])
         add_edge(edge.first, edge.second, property<edge_weight_t, float>(distance), g);
     }
 
+    /*
     cout << "Nombre d'arêtes obtenus : " << num_edges(g) << endl;
     cout << "Nombre de sommets obtenus: " << num_vertices(g) << endl;
+    */
 
     // Analyse du graphe
-    compute_graph(g);
+    compute_graph(g, coord_list);
 
     // 🌟 Création du widget principal qui contiendra le graphe et la légende 🌟
     QWidget mainWidget;
     mainWidget.setWindowTitle("Graph Visualization");
-    mainWidget.resize(WIDTH + 150, HEIGHT); // Augmenter la largeur pour la légende
+    mainWidget.resize(WIDTH + 150, HEIGHT + 150); // Augmenter la largeur pour la légende
 
     // 📌 Layout principal en horizontal (gauche = graphe, droite = légende)
     QHBoxLayout *layout = new QHBoxLayout(&mainWidget);

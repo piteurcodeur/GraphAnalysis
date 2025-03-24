@@ -6,3 +6,6 @@ lib/
 .vscode/
 *lib/boost_1_87_0.zip
 *lib/boost_1_87_0
+*.csv
+*.cpp
+*.h
