@@ -23,6 +23,9 @@
 #include <QPen>
 #include <QBrush>
 #include <QHBoxLayout>
+#include <boost/graph/graph_utility.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graph_traits.hpp>
 
 
 using namespace std;
@@ -239,25 +242,26 @@ int main(int argc, char *argv[])
     cout << "Nombre d'arêtes obtenus : " << num_edges(g) << endl;
     cout << "Nombre de sommets obtenus: " << num_vertices(g) << endl;
     */
+    
 
     // Analyse du graphe
     compute_graph(g, coord_list);
 
-    // 🌟 Création du widget principal qui contiendra le graphe et la légende 🌟
+    // Création du widget principal qui contiendra le graphe et la légende
     QWidget mainWidget;
     mainWidget.setWindowTitle("Graph Visualization");
     mainWidget.resize(WIDTH + 150, HEIGHT + 150); // Augmenter la largeur pour la légende
 
-    // 📌 Layout principal en horizontal (gauche = graphe, droite = légende)
+    // Layout principal en horizontal (gauche = graphe, droite = légende)
     QHBoxLayout *layout = new QHBoxLayout(&mainWidget);
 
-    // 📌 Widget du graphe
+    // Widget du graphe
     GraphView *graphView = new GraphView();
     graphView->resize(WIDTH, HEIGHT);
     graphView->drawGraph(g, coord_list);
     layout->addWidget(graphView);
 
-    // 📌 Widget de la légende
+    // Widget de la légende
     ColorLegend *colorLegend = new ColorLegend();
     layout->addWidget(colorLegend);
     

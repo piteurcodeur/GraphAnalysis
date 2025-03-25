@@ -145,7 +145,7 @@ void CSVOuptutFunction(Graph &g, const vector<pair<double, double>> &list_Node, 
         ostringstream path_stream;
         path_stream << "[";
         for (auto it = path.rbegin(); it != path.rend(); ++it) {
-            if (it != path.rbegin()) path_stream << ", ";
+            if (it != path.rbegin()) path_stream << ",";
             path_stream << (*it + 1);  // Conversion de l'index en sommet 1-based
         }
         path_stream << "]";
@@ -177,6 +177,26 @@ void calculate_and_write_paths(Graph &g, const vector<pair<double, double>> &lis
     cout << "Time taken: " << elapsed_time.count() << " seconds" << endl;
 }
 
+bool isCyclicUtil(int v, bool visited[], bool *recStack, Graph &g) {
+    if(visited[v] == false) {
+        // Marquer le sommet comme visité et dans la pile de récursion
+        visited[v] = true;
+        recStack[v] = true;
+
+        // Parcours des sommets adjacents
+        graph_traits<Graph>::adjacency_iterator ai, ai_end;
+        for (tie(ai, ai_end) = adjacent_vertices(v, g); ai != ai_end; ++ai) {
+            if (!visited[*ai] && isCyclicUtil(*ai, visited, recStack, g)) {
+                return true;
+            } else if (recStack[*ai]) {
+                return true;
+            }
+        }
+    }
+    recStack[v] = false;
+    return false;
+}
+
 
 
 void compute_graph(Graph &g, const vector<std::tuple<double, double, double>> &coord_list)
@@ -206,22 +226,35 @@ void compute_graph(Graph &g, const vector<std::tuple<double, double, double>> &c
 
     cout<<"\n4. Cycle Detection: " << endl;
     // Vérification de la présence de cycles
-    vector<graph_traits<Graph>::vertex_descriptor> topo_order;
-    cout <<"Graph has cycle: ";
-    try {
-        topological_sort(g, back_inserter(topo_order));  // Si un cycle existe, une exception sera levée
-        cout << "False" << endl;
+    
+    // Initialisation des tableaux de visite et de pile de récursion
+    bool *visited = new bool[num_vertices(g)];
+    bool *recStack = new bool[num_vertices(g)];
+    for (size_t i = 0; i < num_vertices(g); i++) {
+        visited[i] = false;
+        recStack[i] = false;
     }
-    catch (const not_a_dag&) {
-        cout << "True" << endl;
+    // Apparition de la fonction de détection de cycle
+    bool cycle = false;
+    for (size_t i = 0; i < num_vertices(g); i++) {
+        if (!visited[i]) {
+            if (isCyclicUtil(i, visited, recStack, g)) {
+                cycle = true;
+                break;
+            }
+        }
     }
-
+    // Affichage du résultat
+    cout << "Graph has cycle: " << (cycle ? "True" : "False") << endl;
+    
+    
     cout<<"\n5. Shortest Path Calculation: " << endl;
     // Calcul du plus court chemin entre les sommets 1 et 6
     Vertex start = 1; // sommet de départ
     Vertex goal = 6;  // sommet d'arrivée
     find_shortest_path(g, start, goal);
 
+    /*
     cout<<"\n6. Connected Components: " << endl;
     cout << "Number of connected components: " << num << endl;
     
@@ -236,6 +269,7 @@ void compute_graph(Graph &g, const vector<std::tuple<double, double, double>> &c
         }
     }
     cout << "}" << endl;
+    */
 
     cout<<"\n8. CSV output function: " << endl;
 
