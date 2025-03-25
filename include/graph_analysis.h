@@ -13,8 +13,6 @@
 #include <boost/graph/topological_sort.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/graph_traits.hpp>
-#include <vector>
-
 
 using Graph = boost::adjacency_list<
     boost::vecS, boost::vecS, boost::bidirectionalS,
@@ -25,13 +23,11 @@ using Graph = boost::adjacency_list<
 using Vertex = boost::graph_traits<Graph>::vertex_descriptor;
 using Edge = boost::graph_traits<Graph>::edge_descriptor;
 
-
-
-// Fonctions
 void readCSV(const std::string &filename, std::vector<std::string> &data);
 double calcul_distance(int first, int second, const std::vector<std::tuple<double, double, double>> &coord_list);
 void find_shortest_path(Graph &g, Vertex start, Vertex goal);
 void compute_graph(Graph &g, const std::vector<std::tuple<double, double, double>> &coord_list);
-void CSVOutputFunction(Graph& g, const std::vector<std::pair<double, double>>& list_Node, const std::vector<std::tuple<double, double, double>>& coord_list, const std::string& filename);
+void CSVOuptutFunction(Graph &g, const std::vector<std::pair<double, double>> &list_Node, const std::vector<std::tuple<double, double, double>> &coord_list, const std::string &filename);
+void calculate_and_write_paths(Graph &g, const std::vector<std::pair<double, double>> &list_Node, const std::vector<std::tuple<double, double, double>> &coord_list, const std::string &filename);
 
 #endif // GRAPH_ANALYSIS_H
