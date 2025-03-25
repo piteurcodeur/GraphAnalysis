@@ -43,12 +43,15 @@ public:
     {
         scene = new QGraphicsScene(this);
         setScene(scene);
+
+        setRenderHint(QPainter::Antialiasing);
+        setRenderHint(QPainter::TextAntialiasing);
+        setRenderHint(QPainter::SmoothPixmapTransform);
+        setRenderHint(QPainter::HighQualityAntialiasing);
     }
 
-    void drawGraph(const Graph &g, const vector<std::tuple<double, double, double>> &coord_list)
+    void drawEdges(const Graph &g, const vector<std::tuple<double, double, double>> &coord_list)
     {
-        scene->clear();
-
         // Draw edges
         for (auto [ei, ei_end] = edges(g); ei != ei_end; ++ei)
         {
@@ -60,9 +63,12 @@ public:
             double x2 = get<0>(coord_list[v]);
             double y2 = get<1>(coord_list[v]);
 
-            scene->addLine(x1, y1, x2, y2, QPen(Qt::black));
+            scene->addLine(x1, y1, x2, y2, QPen(Qt::black, 6));
         }
+    }
 
+    void drawVertices(const Graph &g, const vector<std::tuple<double, double, double>> &coord_list)
+    {
         // Draw vertices
         for (size_t i = 0; i < coord_list.size(); ++i)
         {
@@ -82,11 +88,24 @@ public:
             text->setFont(font);
         }
 
+    }
+
+    void drawGraph(const Graph &g, const vector<std::tuple<double, double, double>> &coord_list)
+    {
+        scene->clear();
+
+        // Draw edges
+        drawEdges(g, coord_list);
+
+        // Draw vertices
+        drawVertices(g, coord_list);
+
         fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
     }
 
     void highlightShortestPath(const Graph &g, const vector<std::tuple<double, double, double>> &coord_list, int start, int goal)
     {
+
         vector<int> distances(num_vertices(g), numeric_limits<int>::max());
         vector<Vertex> predecessors(num_vertices(g));
 
@@ -114,8 +133,11 @@ public:
             double x2 = get<0>(coord_list[path[i + 1]]);
             double y2 = get<1>(coord_list[path[i + 1]]);
 
-            scene->addLine(x1, y1, x2, y2, QPen(Qt::red, 6));
+            scene->addLine(x1, y1, x2, y2, QPen(Qt::green, 6));
         }
+
+        //draw again so there are on first plan
+        drawVertices(g, coord_list);
     }
 
 protected:
@@ -236,9 +258,18 @@ int main(int argc, char *argv[])
 
     QLineEdit *startVertexInput = new QLineEdit();
     startVertexInput->setPlaceholderText("Start Vertex");
+    startVertexInput->setFixedHeight(40);
+    startVertexInput->setFont(QFont("Arial", 12));
+
     QLineEdit *goalVertexInput = new QLineEdit();
     goalVertexInput->setPlaceholderText("Goal Vertex");
+    goalVertexInput->setFixedHeight(40);
+    goalVertexInput->setFont(QFont("Arial", 12));
+
     QPushButton *findPathButton = new QPushButton("Find Path");
+    findPathButton->setFixedHeight(40);
+    findPathButton->setFont(QFont("Arial", 12));
+    findPathButton->setStyleSheet("background-color:rgb(139, 139, 139); color: white;");
 
     inputLayout->addWidget(startVertexInput);
     inputLayout->addWidget(goalVertexInput);
