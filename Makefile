@@ -1,14 +1,16 @@
 CXX = g++
 QT_DIR = /mingw64
 
-CXXFLAGS = -Wall -Iinclude -std=c++17 `pkg-config --cflags Qt5Widgets Qt53DCore Qt53DExtras Qt53DRender` \
-    -I/mingw64/include
+CXXFLAGS = -Wall -Iinclude -std=c++17 `pkg-config --cflags Qt5Widgets` \
+    -I/mingw64/include \
+	-O3 -s -march=native
 
-LDFLAGS = -L"C:/msys64/mingw64/lib" `pkg-config --libs Qt5Widgets Qt53DCore Qt53DExtras Qt53DRender` \
+LDFLAGS = -L"C:/msys64/mingw64/lib" `pkg-config --libs Qt5Widgets` \
     -L/mingw64/lib \
     -lboost_graph-mt
 
 LIBS = 
+
 
 SRC_DIR = src
 OBJ_DIR = obj
@@ -25,6 +27,7 @@ $(EXECUTABLE): $(OBJECTS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 
 clean:
 	rm -f $(OBJ_DIR)/*.o $(EXECUTABLE)

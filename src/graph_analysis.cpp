@@ -72,62 +72,69 @@ void find_shortest_path(Graph &g, Vertex start, Vertex goal) {
 }
 
 void CSVOuptutFunction(Graph &g, const vector<pair<double, double>> &list_Node, const vector<std::tuple<double, double, double>> &coord_list, const string &filename) {
-    ofstream file(filename);
+    
+    ofstream file(filename, ios::out | ios::trunc);
+
     if (!file.is_open()) {
         cerr << "Impossible d'ouvrir le fichier de sortie" << endl;
         return;
     }
 
-    file << "Start;End;Path Length;Path" << endl;
+    file << "Start;End;Path Length;Path\n";
+    size_t n = num_vertices(g);
 
-    Vertex start_idx, goal_idx;
-    
+    vector<double> distances(n);
+    vector<Vertex> predecessors(n);
 
+    // Parcours de la liste des noeuds
     for (const auto &[start, goal] : list_Node) {
-        size_t n = num_vertices(g);
-
         if (start < 1 || goal < 1 || start > n || goal > n) {
             cerr << "Erreur : Indices de sommet invalides (" << start << ", " << goal << ")" << endl;
             continue;
         }
 
-        start_idx = start - 1;
-        goal_idx = goal - 1;
+        Vertex start_idx = start - 1, goal_idx = goal - 1;
 
-        vector<double> distances(n, numeric_limits<double>::max());
-        vector<Vertex> predecessors(n, start_idx);
+        // Initialisation des distances et des prédécesseurs
+        fill(distances.begin(), distances.end(), numeric_limits<double>::max());
+        fill(predecessors.begin(), predecessors.end(), start_idx);
 
+        // Calcul du plus court chemin
         dijkstra_shortest_paths(g, start_idx,
-            predecessor_map(make_iterator_property_map(predecessors.begin(), get(vertex_index, g))).
-            distance_map(make_iterator_property_map(distances.begin(), get(vertex_index, g))).
-            weight_map(get(edge_weight, g))
-        );
+        predecessor_map(make_iterator_property_map(predecessors.begin(), get(vertex_index, g))).
+        distance_map(make_iterator_property_map(distances.begin(), get(vertex_index, g))).
+        weight_map(get(edge_weight, g)));
 
         if (distances[goal_idx] == numeric_limits<double>::max()) {
-            file << start << ";" << goal << ";Inf;No Path" << endl;
+            file << start << ";" << goal << ";Inf;No Path\n";
             continue;
         }
 
+        // Reconstruction du chemin
         vector<Vertex> path;
+        path.reserve(n);
         for (Vertex v = goal_idx; v != start_idx; v = predecessors[v]) {
             if (v == predecessors[v]) {
                 cerr << "Erreur dans le chemin, arrêt prématuré" << endl;
-                file << start << ";" << goal << ";Inf;No Path" << endl;
+                file << start << ";" << goal << ";Inf;No Path\n";
                 break;
             }
             path.push_back(v);
         }
+
         path.push_back(start_idx);
 
+        // Écriture dans le fichier
         ostringstream path_stream;
         path_stream << "[";
+
         for (auto it = path.rbegin(); it != path.rend(); ++it) {
             if (it != path.rbegin()) path_stream << ",";
             path_stream << (*it + 1);
         }
         path_stream << "]";
 
-        file << start << ";" << goal << ";" << distances[goal_idx] << ";" << path_stream.str() << endl;
+        file << start << ";" << goal << ";" << distances[goal_idx] << ";" << path_stream.str() << "\n";
     }
 
     file.close();

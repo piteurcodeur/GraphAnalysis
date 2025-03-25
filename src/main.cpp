@@ -27,16 +27,7 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 #include <QTabWidget>
-/*
-#include <QVector3D>
-#include <QQuaternion>
-#include <Qt3DCore/QEntity>
-#include <Qt3DExtras/Qt3DWindow>
-#include <Qt3DExtras/QOrbitCameraController>
-#include <Qt3DExtras/QSphereMesh>
-#include <Qt3DExtras/QPhongMaterial>
-#include <Qt3DRender/QCamera>
-*/
+
 #include <boost/graph/graph_utility.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_traits.hpp>
