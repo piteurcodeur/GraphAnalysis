@@ -1,11 +1,10 @@
 CXX = g++
 QT_DIR = /mingw64
 
-CXXFLAGS = -Wall -Iinclude -std=c++17 `pkg-config --cflags Qt5Widgets` \
-    -I/mingw64/include \
+CXXFLAGS = -Wall -Iinclude -std=c++17 `pkg-config --cflags Qt5Widgets Qt53DCore Qt53DExtras Qt53DRender` \
+    -I/mingw64/include
 
-
-LDFLAGS = -L"C:/msys64/mingw64/lib" `pkg-config --libs Qt5Widgets` \
+LDFLAGS = -L"C:/msys64/mingw64/lib" `pkg-config --libs Qt5Widgets Qt53DCore Qt53DExtras Qt53DRender` \
     -L/mingw64/lib \
     -lboost_graph-mt
 

@@ -80,6 +80,9 @@ void CSVOuptutFunction(Graph &g, const vector<pair<double, double>> &list_Node, 
 
     file << "Start;End;Path Length;Path" << endl;
 
+    Vertex start_idx, goal_idx;
+    
+
     for (const auto &[start, goal] : list_Node) {
         size_t n = num_vertices(g);
 
@@ -87,8 +90,9 @@ void CSVOuptutFunction(Graph &g, const vector<pair<double, double>> &list_Node, 
             cerr << "Erreur : Indices de sommet invalides (" << start << ", " << goal << ")" << endl;
             continue;
         }
-        Vertex start_idx = start - 1;
-        Vertex goal_idx = goal - 1;
+
+        start_idx = start - 1;
+        goal_idx = goal - 1;
 
         vector<double> distances(n, numeric_limits<double>::max());
         vector<Vertex> predecessors(n, start_idx);
@@ -130,6 +134,8 @@ void CSVOuptutFunction(Graph &g, const vector<pair<double, double>> &list_Node, 
     cout << "Fichier CSV '" << filename << "' généré avec succès." << endl;
 }
 
+
+
 void calculate_and_write_paths(Graph &g, const vector<pair<double, double>> &list_Node, const vector<std::tuple<double, double, double>> &coord_list, const string &filename) {
     auto start_time = std::chrono::high_resolution_clock::now();
 
@@ -161,11 +167,16 @@ bool isCyclicUtil(int v, bool visited[], bool *recStack, Graph &g) {
 
 void compute_graph(Graph &g, const vector<std::tuple<double, double, double>> &coord_list)
 {
+    int graphDegree = 0;
     cout << "\n1. Node degree calculation :" << endl;
     cout << "Node degree: {";
     for (size_t i = 0; i < num_vertices(g); ++i)
     {
         cout << i + 1 << ":" << out_degree(i, g);
+        if(out_degree(i, g) > graphDegree)
+        {
+            graphDegree = out_degree(i, g);
+        }
         if (i < num_vertices(g) - 1)
         {
             cout << ", ";
@@ -174,12 +185,21 @@ void compute_graph(Graph &g, const vector<std::tuple<double, double, double>> &c
     cout << "}" << endl;
 
     cout << "\n2. Graph Degree Calculation: " << endl;
-    cout << "Graph degree: " << num_edges(g) << endl;
+    cout << "Graph degree: " << graphDegree << endl;
 
     cout << "\n3. Graph Connectivity: " << endl;
     vector<int> component(num_vertices(g));
     int num = connected_components(g, &component[0]);
-    cout << "Graph is connected: " << (num == 1) << endl;
+    cout << "Graph is connected: ";
+    if(num == 1)
+    {
+        ;
+        cout << "True"<<endl;
+    }
+    else
+    {
+        cout << "False"<<endl;
+    }
 
     cout << "\n4. Cycle Detection: " << endl;
     bool *visited = new bool[num_vertices(g)]();
