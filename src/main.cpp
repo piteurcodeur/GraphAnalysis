@@ -49,7 +49,6 @@ public:
         setRenderHint(QPainter::Antialiasing);
         setRenderHint(QPainter::TextAntialiasing);
         setRenderHint(QPainter::SmoothPixmapTransform);
-        //setRenderHint(QPainter::HighQualityAntialiasing);
     }
 
     void drawEdges(const Graph &g, const vector<std::tuple<double, double, double>> &coord_list)
@@ -182,83 +181,7 @@ protected:
     }
 };
 
-/*
-void displayGraph3D(const Graph& g, QWidget *container) {
-    // Vérification et ajout d'un layout si nécessaire
-    if (!container->layout()) {
-        container->setLayout(new QVBoxLayout());
-    }
 
-    // Création de la fenêtre Qt3D
-    Qt3DExtras::Qt3DWindow *view = new Qt3DExtras::Qt3DWindow();
-    QWidget *container3D = QWidget::createWindowContainer(view);
-    container->layout()->addWidget(container3D);
-    container->setMinimumSize(QSize(800, 600));
-
-    // Racine de la scène
-    Qt3DCore::QEntity *rootEntity = new Qt3DCore::QEntity();
-
-    // Caméra
-    Qt3DRender::QCamera *cameraEntity = view->camera();
-    cameraEntity->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
-    cameraEntity->setPosition(QVector3D(0, 0, 20.0f));
-    cameraEntity->setViewCenter(QVector3D(0, 0, 0));
-
-    // Contrôleur de caméra
-    Qt3DExtras::QOrbitCameraController *camController = new Qt3DExtras::QOrbitCameraController(rootEntity);
-    camController->setLinearSpeed(50.0f);
-    camController->setLookSpeed(180.0f);
-    camController->setCamera(cameraEntity);
-
-    // Création des nœuds (sphères)
-    for (const auto& node : g.nodes()) {
-        Qt3DCore::QEntity *nodeEntity = new Qt3DCore::QEntity(rootEntity);
-        Qt3DExtras::QSphereMesh *sphere = new Qt3DExtras::QSphereMesh();
-        sphere->setRadius(0.5f);
-        nodeEntity->addComponent(sphere);
-
-        Qt3DExtras::QPhongMaterial *material = new Qt3DExtras::QPhongMaterial();
-        material->setDiffuse(QColor(QRgb(0x928327)));
-        nodeEntity->addComponent(material);
-
-        Qt3DCore::QTransform *transform = new Qt3DCore::QTransform();
-        transform->setTranslation(QVector3D(node.x(), node.y(), node.z()));
-        nodeEntity->addComponent(transform);
-    }
-
-    // Création des arêtes (cylindres alignés entre les nœuds)
-    for (const auto& edge : g.edges()) {
-        QVector3D start(edge.start().x(), edge.start().y(), edge.start().z());
-        QVector3D end(edge.end().x(), edge.end().y(), edge.end().z());
-        QVector3D midPoint = (start + end) * 0.5f;
-        QVector3D direction = end - start;
-        float length = direction.length();
-        direction.normalize();
-
-        // Calcul de la rotation (alignement du cylindre avec l’arête)
-        QVector3D defaultDir(0.0f, 1.0f, 0.0f);  // Cylindre orienté vers Y
-        QQuaternion rotation = QQuaternion::rotationTo(defaultDir, direction);
-
-        Qt3DCore::QEntity *edgeEntity = new Qt3DCore::QEntity(rootEntity);
-        Qt3DExtras::QCylinderMesh *cylinder = new Qt3DExtras::QCylinderMesh();
-        cylinder->setRadius(0.1f);
-        cylinder->setLength(length);
-        edgeEntity->addComponent(cylinder);
-
-        Qt3DExtras::QPhongMaterial *material = new Qt3DExtras::QPhongMaterial();
-        material->setDiffuse(QColor(QRgb(0x666666)));
-        edgeEntity->addComponent(material);
-
-        Qt3DCore::QTransform *transform = new Qt3DCore::QTransform();
-        transform->setTranslation(midPoint);
-        transform->setRotation(rotation);
-        edgeEntity->addComponent(transform);
-    }
-
-    // Définir l'entité racine de la scène
-    view->setRootEntity(rootEntity);
-}
-*/
 
 int main(int argc, char *argv[])
 {
@@ -359,7 +282,6 @@ int main(int argc, char *argv[])
 
     QTabWidget *tabWidget = new QTabWidget();
     QWidget *tab2D = new QWidget();
-    //QWidget *tab3D = new QWidget();
 
     QHBoxLayout *layout2D = new QHBoxLayout(tab2D);
     GraphView *graphView = new GraphView();
@@ -370,11 +292,9 @@ int main(int argc, char *argv[])
     ColorLegend *colorLegend = new ColorLegend();
     layout2D->addWidget(colorLegend);
 
-    //QVBoxLayout *layout3D = new QVBoxLayout(tab3D);
-    //displayGraph3D(g, tab3D);
 
     tabWidget->addTab(tab2D, "2D View");
-    //tabWidget->addTab(tab3D, "3D View");
+    
 
     mainLayout->addWidget(tabWidget);
 
